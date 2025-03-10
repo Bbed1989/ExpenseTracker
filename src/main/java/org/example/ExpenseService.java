@@ -2,6 +2,7 @@ package org.example;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,23 @@ public class ExpenseService {
         writeExpenses(expenses);
     }
 
+    public boolean updateExpense(int id,  String description, int amount) throws IOException {
+        List<Map<String, Object>> expenses = readExpenses();
+        boolean isUpdated = false;
+        for (Map<String, Object> expenseMap : expenses) {
+            if ((int) expenseMap.get("id") == id) {
+                expenseMap.put("description", description);
+                expenseMap.put("amount", amount);
+                isUpdated = true;
+                break;
+            }
+        }
+        if(isUpdated) {
+            writeExpenses(expenses);
+        }
+        return isUpdated;
+    }
+
     private void writeExpenses(List<Map<String, Object>> expenses) throws IOException {
         try (FileWriter writer = new FileWriter(FILE_NAME)) {
             // filter empty maps
@@ -53,7 +71,6 @@ public class ExpenseService {
             }
         }
     }
-
 
     private String mapToJson(Map<String, Object> map) {
         StringBuilder json = new StringBuilder("{");
