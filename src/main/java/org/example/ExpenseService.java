@@ -39,7 +39,7 @@ public class ExpenseService {
         List<Map<String, Object>> expenses = readExpenses();
         boolean isUpdated = false;
         for (Map<String, Object> expenseMap : expenses) {
-            if ((int) expenseMap.get("id") == id) {
+            if (Integer.parseInt(expenseMap.get("id").toString()) == id) {
                 expenseMap.put("description", description);
                 expenseMap.put("amount", amount);
                 isUpdated = true;
