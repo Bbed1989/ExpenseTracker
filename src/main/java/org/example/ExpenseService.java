@@ -52,6 +52,37 @@ public class ExpenseService {
         return isUpdated;
     }
 
+
+    public boolean deleteExpense(int id) throws IOException {
+        List<Map<String, Object>> expenses = readExpenses();
+        boolean isDeleted = false;
+        for (Map<String, Object> expenseMap : expenses) {
+            if (Integer.parseInt(expenseMap.get("id").toString()) == id) {
+                expenses.remove(expenseMap);
+                isDeleted = true;
+                break;
+            }
+        }
+        if(isDeleted) {
+            writeExpenses(expenses);
+        }
+        return isDeleted;
+    }
+    
+    public void getAllExpenses() throws IOException {
+        List<Map<String, Object>> expenses = readExpenses();
+        System.out.println("#  ID   Date       Description    Amount");
+        System.out.println("# --------------------------------------");
+
+        for (Map<String, Object> expense : expenses) {
+            System.out.printf("#  %-4d %-10s %-12s $%-6d\n",
+                    Integer.parseInt(expense.get("id").toString()),
+                    expense.get("date"),
+                    expense.get("description"),
+                    Integer.parseInt(expense.get("amount").toString()));
+        }
+    }
+
     private void writeExpenses(List<Map<String, Object>> expenses) throws IOException {
         try (FileWriter writer = new FileWriter(FILE_NAME)) {
             // filter empty maps

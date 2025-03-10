@@ -23,7 +23,7 @@ public class CommandHandler {
                 handleAdd(args);
                 break;
             case "list":
-                handleList(args);
+                handleList();
                 break;
             case "update":
                 handleUpdate(args);
@@ -42,7 +42,14 @@ public class CommandHandler {
     private void handleStatus(String[] args) {
     }
 
-    private void handleDelete(String[] args) {
+    private void handleDelete(String[] args) throws IOException {
+        int id = getId(args);
+        boolean deleted = expenseService.deleteExpense(id);
+        if (deleted) {
+            System.out.println("Expense deleted successfully: " + id);
+        } else {
+            System.out.println("No expense found with ID " + id);
+        }
     }
 
     private void handleUpdate(String[] args) throws IOException {
@@ -60,7 +67,8 @@ public class CommandHandler {
         }
     }
 
-    private void handleList(String[] args) {
+    private void handleList() throws IOException {
+        expenseService.getAllExpenses();
     }
 
     private void handleAdd(String[] args) throws IOException {
