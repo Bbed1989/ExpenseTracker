@@ -32,14 +32,15 @@ public class CommandHandler {
                 handleDelete(args);
                 break;
             case "summary":
-                handleStatus(args);
+                handleSummary(args);
                 break;
             default:
                 System.out.println("Unknown command: " + command);
         }
     }
 
-    private void handleStatus(String[] args) {
+    private void handleSummary(String[] args) throws IOException {
+        expenseService.getSummary(args);
     }
 
     private void handleDelete(String[] args) throws IOException {
@@ -90,7 +91,7 @@ public class CommandHandler {
     }
 
     private int getAmount(String[] args) {
-        if (args.length < 4) {
+        if (args.length < 3) {
             while (true) {
                 System.out.print("Enter new amount: ");
                 try {
@@ -100,7 +101,7 @@ public class CommandHandler {
                     scanner.nextLine();
                 }
             }
-        } else return Integer.parseInt(args[3]);
+        } else return Integer.parseInt(args[2]);
     }
 
     private int getId(String[] args) {

@@ -83,6 +83,28 @@ public class ExpenseService {
         }
     }
 
+    public void getSummary(String[] args) throws IOException {
+        List<Map<String, Object>> expenses = readExpenses();
+        if (args.length < 2) {
+            int totalAmount = expenses.stream()
+                    .mapToInt(expense -> Integer.parseInt(expense.get("amount").toString()))
+                    .sum();
+
+            System.out.printf("Total expenses: $%-6d\n", totalAmount);
+        } else {
+            int month = Integer.parseInt(args[1]);
+            int totalAmount = expenses.stream()
+                    .filter(expense -> {
+                        String dateString = expense.get("date").toString();
+                        LocalDate date = LocalDate.parse(dateString);
+                        return date.getMonthValue() == month;
+                    })
+                    .mapToInt(expense -> Integer.parseInt((String) expense.get("amount")))
+                    .sum();
+            System.out.println("Total expenses for month " + getMonth(month) + ": $" + totalAmount);
+        }
+    }
+
     private void writeExpenses(List<Map<String, Object>> expenses) throws IOException {
         try (FileWriter writer = new FileWriter(FILE_NAME)) {
             // filter empty maps
@@ -164,5 +186,23 @@ public class ExpenseService {
             map.put(key, value);
         }
         return map;
+    }
+
+    private String getMonth(int month){
+        return switch (month) {
+            case 1 -> "January";
+            case 2 -> "February";
+            case 3 -> "March";
+            case 4 -> "April";
+            case 5 -> "May";
+            case 6 -> "June";
+            case 7 -> "July";
+            case 8 -> "August";
+            case 9 -> "September";
+            case 10 -> "October";
+            case 11 -> "November";
+            case 12 -> "December";
+            default -> "Invalid month";
+        };
     }
 }
