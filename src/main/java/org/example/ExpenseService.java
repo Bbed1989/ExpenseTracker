@@ -2,7 +2,6 @@ package org.example;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +10,10 @@ import java.util.stream.Collectors;
 
 public class ExpenseService {
     private static final String FILE_NAME = "expenses.json";
+    private static final String CSV_FILE = "expenses.csv";
     private static final String EMPTY_JSON = "[]";
+    private final static int MAX_EXPENSES = 100;
+
     public Expense createExpense(String description, int amount) {
         return new Expense(
                 (int) (Math.random() * 1000), // generating random Id
@@ -25,12 +27,12 @@ public class ExpenseService {
         List<Map<String, Object>> expenses = readExpenses();
 
         Map<String, Object> expenseMap = new HashMap<>();
-        expenseMap.put("id", expense.getId());
-        expenseMap.put("description", expense.getDescription());
-        expenseMap.put("date", expense.getDate());
-        expenseMap.put("amount", expense.getAmount());
+        expenseMap.put("id", expense.id());
+        expenseMap.put("description", expense.description());
+        expenseMap.put("date", expense.date());
+        expenseMap.put("amount", expense.amount());
 
-         expenses.add(expenseMap);
+        expenses.add(expenseMap);
 
         writeExpenses(expenses);
     }
@@ -102,6 +104,16 @@ public class ExpenseService {
                     .mapToInt(expense -> Integer.parseInt((String) expense.get("amount")))
                     .sum();
             System.out.println("Total expenses for month " + getMonth(month) + ": $" + totalAmount);
+        }
+    }
+
+    public void checkBudget() throws IOException {
+        List<Map<String, Object>> expenses = readExpenses();
+        int totalAmount = expenses.stream()
+                .mapToInt(expense -> Integer.parseInt(expense.get("amount").toString()))
+                .sum();
+        if (totalAmount >= MAX_EXPENSES){
+            System.out.println("Budget exceeded!");
         }
     }
 
@@ -186,6 +198,24 @@ public class ExpenseService {
             map.put(key, value);
         }
         return map;
+    }
+
+    public void exportToCSV() throws IOException {
+        List<Map<String, Object>> expenses = readExpenses();
+        try (FileWriter writer = new FileWriter(CSV_FILE)) {
+            // Write header
+            writer.append("ID,Date,Description,Amount\n");
+
+            // Write each expense
+            for (Map<String, Object> expense : expenses) {
+                writer.append(expense.get("id").toString()).append(",")
+                        .append(expense.get("date").toString()).append(",")
+                        .append(expense.get("description").toString()).append(",")
+                        .append(expense.get("amount").toString()).append("\n");
+            }
+
+            System.out.println("Expenses exported to " + CSV_FILE);
+        }
     }
 
     private String getMonth(int month){

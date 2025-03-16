@@ -34,6 +34,9 @@ public class CommandHandler {
             case "summary":
                 handleSummary(args);
                 break;
+            case "export":
+                handleExport();
+                break;
             default:
                 System.out.println("Unknown command: " + command);
         }
@@ -66,6 +69,7 @@ public class CommandHandler {
         } else {
             System.out.println("No expense found with ID " + id);
         }
+        expenseService.checkBudget();
     }
 
     private void handleList() throws IOException {
@@ -80,7 +84,12 @@ public class CommandHandler {
         }
         Expense expense = expenseService.createExpense(description, amount);
         expenseService.addExpense(expense);
-        System.out.println("Expense added successfully: " + expense.getId());
+        System.out.println("Expense added successfully: " + expense.id());
+        expenseService.checkBudget();
+    }
+
+    private void handleExport () throws IOException {
+        expenseService.exportToCSV();
     }
 
     private String getDescription(String[] args) {
